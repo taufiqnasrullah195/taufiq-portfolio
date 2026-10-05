@@ -49,54 +49,6 @@
     revealables.forEach(function (el) { io.observe(el); });
   }
 
-  /* ---------- portrait lens ----------
-     The reveal sits on a moving mask, so the interaction needs no canvas:
-     a pointer position and an inner radius are written to CSS variables. */
-  var figure = document.getElementById('lensFigure');
-  var lens = document.getElementById('lensLayer');
-
-  if (figure && lens) {
-    var stack = figure.querySelector('.hero__stack');
-    var hint = document.getElementById('lensHint');
-    var used = false;
-
-    function sizeLens() {
-      var w = stack.clientWidth || 360;
-      stack.style.setProperty('--r', Math.max(52, Math.round(w * 0.2)) + 'px');
-    }
-    sizeLens();
-    window.addEventListener('resize', sizeLens);
-
-    if (!reduced) {
-      stack.addEventListener('pointermove', function (event) {
-        if (event.pointerType === 'touch') return;
-        var rect = stack.getBoundingClientRect();
-        var x = Math.max(0, Math.min(rect.width, event.clientX - rect.left));
-        var y = Math.max(0, Math.min(rect.height, event.clientY - rect.top));
-        stack.style.setProperty('--mx', (x / rect.width * 100).toFixed(2) + '%');
-        stack.style.setProperty('--my', (y / rect.height * 100).toFixed(2) + '%');
-        if (!used) {
-          used = true;
-          lens.classList.remove('is-idle');
-          figure.classList.add('is-used');
-          if (hint) hint.textContent = 'Lens follows your pointer';
-          stack.style.setProperty('--r', Math.max(72, Math.round(rect.width * 0.26)) + 'px');
-        }
-      });
-
-      stack.addEventListener('pointerleave', function () {
-        var rect = stack.getBoundingClientRect();
-        stack.style.setProperty('--mx', '50%');
-        stack.style.setProperty('--my', '14%');
-        stack.style.setProperty('--r', Math.max(52, Math.round(rect.width * 0.2)) + 'px');
-        if (used) {
-          lens.classList.add('is-idle');
-          if (hint) hint.textContent = 'Move your pointer over the frame';
-        }
-      });
-    }
-  }
-
   /* ---------- local time in Vlotho ---------- */
   var clock = document.getElementById('clockTime');
   if (clock) {
