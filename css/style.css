@@ -331,14 +331,14 @@ h1, h2, h3 { font-weight: 600; }
   object-fit: cover;
   object-position: 50% 12%;
 }
-.hero__img--base { filter: saturate(.9) contrast(.99); }
+.hero__img--base { filter: grayscale(1) contrast(1.04) brightness(1.02); }
 .hero__img--lens {
   z-index: 2;
-  filter: saturate(1.04) contrast(1.03);
+  filter: saturate(1.08) contrast(1.02);
   -webkit-mask-image: radial-gradient(circle at var(--mx, 50%) var(--my, 14%),
-                      #000 0 var(--r, 62px), transparent calc(var(--r, 62px) + 46px));
+                      #000 0 var(--r, 78px), transparent calc(var(--r, 78px) + 52px));
   mask-image: radial-gradient(circle at var(--mx, 50%) var(--my, 14%),
-              #000 0 var(--r, 62px), transparent calc(var(--r, 62px) + 46px));
+              #000 0 var(--r, 78px), transparent calc(var(--r, 78px) + 52px));
 }
 @supports not ((mask-image: radial-gradient(#000, transparent)) or (-webkit-mask-image: radial-gradient(#000, transparent))) {
   .hero__img--lens { display: none; }
