@@ -32,6 +32,58 @@
     requestAnimationFrame(function () { hero.classList.add('is-ready'); });
   });
 
+  /* ---------- photo: black and white, then colour ----------
+     A CSS-only transition from the first paint is unreliable: the browser has
+     usually committed the final state before the first frame is drawn, so
+     nothing animates. Here the start state is written as an inline style,
+     the document is forced to lay out, and only then does .is-color land. */
+  (function photoColorise() {
+    var photo = document.getElementById('heroPhoto');
+    if (!photo) return;
+    var replay = document.getElementById('photoReplay');
+
+    /* A colour dissolve, not movement, so it is safe to keep for visitors who
+       ask for reduced motion. Only real motion is stripped elsewhere. */
+    function play() {
+      photo.classList.remove('is-color');
+      photo.style.filter = 'grayscale(1) contrast(1.06) brightness(1.03)';
+      /* read a layout property so the grey frame is committed before the change */
+      void photo.offsetWidth;
+      window.setTimeout(function () {
+        photo.style.removeProperty('filter');
+        photo.classList.add('is-color');
+      }, 340);
+    }
+
+    if (replay) {
+      replay.addEventListener('click', function () {
+        play();
+        replay.blur();
+      });
+    }
+
+    if (photo.complete && photo.naturalWidth > 0) {
+      window.setTimeout(play, 300);
+    } else {
+      photo.addEventListener('load', function () { window.setTimeout(play, 200); }, { once: true });
+      photo.addEventListener('error', function () { photo.classList.add('is-color'); }, { once: true });
+    }
+
+    /* scroll away and back, and the change plays again */
+    if ('IntersectionObserver' in window) {
+      var left = false;
+      new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          if (entry.isIntersecting) {
+            if (left) play();
+          } else {
+            left = true;
+          }
+        });
+      }, { threshold: 0.45 }).observe(photo);
+    }
+  })();
+
   /* ---------- scroll reveals ---------- */
   var revealables = Array.prototype.slice.call(document.querySelectorAll('[data-reveal]'));
 

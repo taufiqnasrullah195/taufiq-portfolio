@@ -7,7 +7,7 @@
 <meta name="description" content="Taufiq Nashrullah, Computer Science graduate in Vlotho, Germany. IT support, network infrastructure, and cybersecurity. Open to junior IT support and system administrator roles." />
 <meta name="theme-color" content="#f7f6f3" />
 <meta name="color-scheme" content="light" />
-<link rel="stylesheet" href="css/style.css" />
+<link rel="stylesheet" href="css/style.css?v=4" />
 <link rel="preload" as="image" href="assets/profile-hero.jpg" />
 <script type="application/ld+json">
 {
@@ -108,13 +108,14 @@
 
       <figure class="hero__figure" id="lensFigure">
         <div class="hero__stack">
-          <img class="hero__img"
+          <img class="hero__img" id="heroPhoto"
                src="assets/profile-hero.jpg"
-               alt="Portrait of Taufiq Nashrullah" decoding="async" />
+               alt="Portrait of Taufiq Nashrullah" decoding="async" fetchpriority="high" />
           <span class="hero__grid" aria-hidden="true"></span>
         </div>
         <figcaption class="hero__caption">
           <span>Application photo</span>
+          <button class="hero__replay" id="photoReplay" type="button">Replay colour</button>
         </figcaption>
       </figure>
     </div>
@@ -581,6 +582,6 @@
   </aside>
 </div>
 
-<script src="js/main.js"></script>
+<script src="js/main.js?v=4"></script>
 </body>
 </html>

@@ -330,10 +330,11 @@ h1, h2, h3 { font-weight: 600; }
   height: 100%;
   object-fit: cover;
   object-position: 50% 12%;
-  filter: grayscale(1) contrast(1.04) brightness(1.02);
-  transition: filter 2.4s cubic-bezier(.25, .46, .45, .94);
+  /* the start state; JS flips .is-color once the picture is on screen */
+  filter: grayscale(1) contrast(1.06) brightness(1.03);
+  transition: filter 3.2s cubic-bezier(.33, 0, .2, 1);
 }
-.hero.is-ready .hero__img {
+.hero__img.is-color {
   filter: grayscale(0) contrast(1) brightness(1);
 }
 
@@ -358,6 +359,22 @@ h1, h2, h3 { font-weight: 600; }
   font-family: var(--mono);
   font-size: 11px;
   color: var(--faint);
+}
+
+.hero__replay {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--accent);
+  text-decoration: underline;
+  text-decoration-color: rgba(169, 79, 28, .4);
+  text-underline-offset: 3px;
+  padding: 11px 0;
+  min-height: 44px;
+  transition: text-decoration-color .2s var(--ease), color .2s var(--ease);
+}
+.hero__replay:hover {
+  color: var(--accent-deep);
+  text-decoration-color: currentColor;
 }
 
 .hero__foot {
@@ -819,16 +836,18 @@ h1, h2, h3 { font-weight: 600; }
   :root { --shell: 1240px; }
 }
 
-/* ---------- reduced motion ---------- */
+/* ---------- reduced motion ----------
+   Movement is removed. Colour and opacity fades stay: they carry information
+   and do not trigger vestibular symptoms, so a blanket transition kill would
+   only break the page silently. */
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
   *, *::before, *::after {
     animation-duration: .01ms !important;
     animation-iteration-count: 1 !important;
-    transition-duration: .01ms !important;
   }
-  [data-reveal] { opacity: 1; transform: none; }
-  .mask__i { transform: none; }
-  .hero__img { filter: none; transition: none; }
+  [data-reveal] { opacity: 1; transform: none; transition: none; }
+  .mask__i { transform: none; transition: none; }
   .progress__bar { transition: none; }
+  .btn, .pill { transition: none; }
 }
