@@ -42,17 +42,42 @@
     if (!photo) return;
     var replay = document.getElementById('photoReplay');
 
-    /* A colour dissolve, not movement, so it is safe to keep for visitors who
-       ask for reduced motion. Only real motion is stripped elsewhere. */
+    var HOLD = 520;        /* ms the picture sits in black and white first */
+    var FADE = 2600;       /* ms of the dissolve into colour */
+    var running = false;
+
+    /* The fade is stepped by hand instead of by a CSS transition. A transition
+       reversed before it finishes only dips a few percent and looks like
+       nothing happened, and a media query can cancel the duration outright.
+       Writing the filter each frame has neither failure mode. */
+    function grey(v) {
+      return 'grayscale(' + v.toFixed(4) +
+             ') contrast(' + (1 + 0.06 * v).toFixed(4) +
+             ') brightness(' + (1 + 0.03 * v).toFixed(4) + ')';
+    }
+
     function play() {
-      photo.classList.remove('is-color');
-      photo.style.filter = 'grayscale(1) contrast(1.06) brightness(1.03)';
-      /* read a layout property so the grey frame is committed before the change */
-      void photo.offsetWidth;
-      window.setTimeout(function () {
-        photo.style.removeProperty('filter');
-        photo.classList.add('is-color');
-      }, 340);
+      if (running) return;
+      running = true;
+
+      photo.style.filter = grey(1);
+
+      var start = null;
+      function step(now) {
+        if (start === null) start = now;
+        var t = Math.min((now - start) / FADE, 1);
+        var eased = t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+        photo.style.filter = grey(1 - eased);
+        if (t < 1) {
+          requestAnimationFrame(step);
+        } else {
+          /* end state written inline, so nothing in the stylesheet can undo it */
+          photo.style.filter = grey(0);
+          running = false;
+        }
+      }
+
+      window.setTimeout(function () { requestAnimationFrame(step); }, HOLD);
     }
 
     if (replay) {
@@ -63,10 +88,13 @@
     }
 
     if (photo.complete && photo.naturalWidth > 0) {
-      window.setTimeout(play, 300);
+      play();
     } else {
-      photo.addEventListener('load', function () { window.setTimeout(play, 200); }, { once: true });
-      photo.addEventListener('error', function () { photo.classList.add('is-color'); }, { once: true });
+      photo.addEventListener('load', function () { play(); }, { once: true });
+      photo.addEventListener('error', function () {
+        photo.style.removeProperty('filter');
+        photo.classList.add('is-color');
+      }, { once: true });
     }
 
     /* scroll away and back, and the change plays again */

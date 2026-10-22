@@ -330,12 +330,12 @@ h1, h2, h3 { font-weight: 600; }
   height: 100%;
   object-fit: cover;
   object-position: 50% 12%;
-  /* the start state; JS flips .is-color once the picture is on screen */
-  filter: grayscale(1) contrast(1.06) brightness(1.03);
-  transition: filter 3.2s cubic-bezier(.33, 0, .2, 1);
 }
-.hero__img.is-color {
-  filter: grayscale(0) contrast(1) brightness(1);
+
+/* The grey start state only exists when scripting is on: without it the
+   picture would sit grey forever if the script never ran. */
+.has-js .hero__img {
+  filter: grayscale(1) contrast(1.06) brightness(1.03);
 }
 
 .hero__grid {
