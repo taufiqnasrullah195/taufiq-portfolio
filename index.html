@@ -506,9 +506,14 @@
       <form class="cform" id="contactForm" novalidate data-reveal style="--d:180ms">
         <h3 class="cform__title">Send a message</h3>
         <p class="cform__note">
-          This page has no server behind it, so the button below opens your own mail app
-          with the message filled in.
+          Fill in the form and hit Send — your message goes straight to my inbox.
         </p>
+
+        <!-- FormSubmit hidden config -->
+        <input type="hidden" name="_subject" value="Portfolio enquiry" />
+        <input type="hidden" name="_captcha" value="false" />
+        <input type="hidden" name="_template" value="table" />
+        <input type="hidden" name="_autoresponse" value="Thanks for reaching out! I will get back to you as soon as possible. — Taufiq" />
 
         <label class="field">
           <span>Your name</span>
@@ -526,7 +531,7 @@
         </label>
 
         <div class="cform__actions">
-          <button class="btn btn--solid" type="submit">Open in mail app</button>
+          <button class="btn btn--solid" type="submit" id="cfSubmit">Send message</button>
           <button class="btn btn--ghost" type="button" id="copyEmail">Copy email address</button>
         </div>
 

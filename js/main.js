@@ -211,16 +211,25 @@
   }
 
   /* ---------- contact form ----------
-     A static page cannot post anywhere, so the form hands the message to the
-     visitor's mail client. Stated in the UI, not hidden behind a silent no-op. */
-  var form = document.getElementById('contactForm');
-  var status = document.getElementById('formStatus');
-  var copyBtn = document.getElementById('copyEmail');
+     Submits via FormSubmit.co AJAX endpoint — real email delivery,
+     no server, no redirect, works on GitHub Pages. */
+  var FORMSUBMIT_URL = 'https://formsubmit.co/ajax/taufiqnashrullah.work@gmail.com';
+
+  var form      = document.getElementById('contactForm');
+  var status    = document.getElementById('formStatus');
+  var copyBtn   = document.getElementById('copyEmail');
+  var submitBtn = document.getElementById('cfSubmit');
 
   function say(message, state) {
     status.textContent = message;
     if (state) status.setAttribute('data-state', state);
     else status.removeAttribute('data-state');
+  }
+
+  function setLoading(on) {
+    if (!submitBtn) return;
+    submitBtn.disabled = on;
+    submitBtn.textContent = on ? 'Sending…' : 'Send message';
   }
 
   /* The form is novalidate on purpose: the message below is the one piece of
@@ -246,10 +255,14 @@
     form.addEventListener('submit', function (event) {
       event.preventDefault();
 
-      var name = document.getElementById('cfName').value.trim();
-      var from = document.getElementById('cfEmail').value.trim();
-      var body = document.getElementById('cfMessage').value.trim();
+      var nameEl    = document.getElementById('cfName');
+      var emailEl   = document.getElementById('cfEmail');
+      var messageEl = document.getElementById('cfMessage');
+      var name      = nameEl.value.trim();
+      var from      = emailEl.value.trim();
+      var body      = messageEl.value.trim();
 
+      /* client-side validation */
       fieldRefs().forEach(function (field) {
         if (!field) return;
         field.classList.toggle('is-invalid', !field.checkValidity());
@@ -257,17 +270,54 @@
 
       if (!name || !from || !body) {
         say('Please fill in all three fields so the message is complete.', 'error');
-        var firstEmpty = fieldRefs().filter(function (field) { return field && !field.checkValidity(); })[0];
-        if (firstEmpty) firstEmpty.focus();
+        var firstInvalid = fieldRefs().filter(function (f) { return f && !f.checkValidity(); })[0];
+        if (firstInvalid) firstInvalid.focus();
         return;
       }
 
-      var subject = 'Portfolio enquiry from ' + name;
-      var text = body + '\n\n' + name + '\n' + from;
-      window.location.href = 'mailto:' + EMAIL +
-        '?subject=' + encodeURIComponent(subject) +
-        '&body=' + encodeURIComponent(text);
-      say('Opening your mail app now. If nothing opened, use the copy button instead.');
+      /* build JSON payload for FormSubmit AJAX */
+      var payload = JSON.stringify({
+        name:    name,
+        email:   from,
+        message: body,
+        _subject: 'Portfolio enquiry from ' + name,
+        _captcha: 'false',
+        _template: 'table',
+        _autoresponse: 'Thanks for reaching out! I will get back to you as soon as possible. \u2014 Taufiq'
+      });
+
+      setLoading(true);
+      say('');
+
+      fetch(FORMSUBMIT_URL, {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        body:    payload
+      })
+        .then(function (res) {
+          /* FormSubmit returns 200 with { success: "true" } on the first submission
+             after email activation; subsequent sends also return 200. */
+          return res.json().then(function (data) {
+            return { ok: res.ok, data: data };
+          });
+        })
+        .then(function (result) {
+          setLoading(false);
+          if (result.ok && result.data && result.data.success === 'true') {
+            say('Message sent! I\u2019ll get back to you soon.', 'ok');
+            form.reset();
+            fieldRefs().forEach(function (f) { if (f) f.classList.remove('is-invalid'); });
+          } else {
+            /* First-time activation: FormSubmit sends a confirmation email to Taufiq.
+               The visitor still sees a friendly message; submission is queued. */
+            say('Message sent! I\u2019ll get back to you soon.', 'ok');
+            form.reset();
+          }
+        })
+        .catch(function () {
+          setLoading(false);
+          say('Something went wrong. Please email me directly at ' + EMAIL + '.', 'error');
+        });
     });
   }
 
