@@ -305,12 +305,19 @@
             </div>
             <h3>IOC Insight</h3>
             <p>
-              AI-powered IOC triage for SOC L1 analysts: multi-source threat-intel
-              enrichment (VirusTotal, AbuseIPDB) with LLM verdict synthesis and
-              bilingual EN/DE/ID reporting.
+              AI-powered IOC triage for SOC L1 analysts: paste any indicator (IP,
+              domain, URL, hash — defanged input OK) and get parallel enrichment
+              from 9 threat-intel sources (VirusTotal, AbuseIPDB, AlienVault OTX,
+              urlscan.io, GreyNoise, ThreatFox, URLhaus, MalwareBazaar, WHOIS),
+              MITRE ATT&amp;CK mapping, a deterministic 0–100 risk score, and an
+              LLM verdict synthesis with recommended action — with a heuristic
+              fallback that never blocks on AI downtime. Telegram alerts on
+              MALICIOUS verdicts, AI Q&amp;A over lookup history, bulk lookup, and
+              three interfaces: CLI, interactive TUI, and a React web dashboard.
+              207 pytest cases.
             </p>
             <ul class="tags">
-              <li>Python</li><li>Threat Intel</li><li>LLM</li><li>SOC</li>
+              <li>Python</li><li>Threat Intel</li><li>LLM</li><li>React</li><li>Docker</li><li>MITRE ATT&amp;CK</li>
             </ul>
             <a class="work__link" href="https://github.com/taufiqnasrullah195/ioc-insight" target="_blank" rel="noopener noreferrer">github.com/taufiqnasrullah195/ioc-insight →</a>
           </article>
